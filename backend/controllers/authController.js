@@ -79,3 +79,30 @@ exports.getMe = async (req, res) => {
     res.status(500).json({ msg: "Server error", error: err.message });
   }
 };
+
+exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      users,
+    });
+  } catch (error) {
+    res.status(500).json({ msg: "Server error", error: error.message });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    await User.findByIdAndDelete(id);
+    res.status(200).json({ msg: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ msg: "Server error", error: error.message });
+  }
+};
