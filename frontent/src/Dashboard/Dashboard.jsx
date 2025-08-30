@@ -31,7 +31,7 @@ const Dashboard = () => {
           API.get("/api/analytics/total-paid-amount"),
           API.get("/api/analytics/total-balance"),
         ]);
-        console.log(invoiceRes.data.length, totalCustomers);
+        //console.log(invoiceRes.data.length, totalCustomers);
         setLoading(false);
         setInvoiceCount(
           Array.isArray(invoiceRes.data) ? invoiceRes.data.length : 0
@@ -105,7 +105,8 @@ const Dashboard = () => {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className={`text-white  p-5 md:py-12 rounded-xl shadow-lg flex flex-col md:flex md:justify-between md:flex-col items-center justify-center ${stat.color}`}>
+            className={`text-white  p-5 md:py-12 rounded-xl shadow-lg flex flex-col md:flex md:justify-between md:flex-col items-center justify-center ${stat.color}`}
+          >
             <h2 className="text-lg font-semibold">{stat.title}</h2>
             <p className=" font-extrabold text-xl py-2">
               {" "}

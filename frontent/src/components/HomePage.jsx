@@ -16,7 +16,8 @@ const HomePage = () => {
                   ? " md:border-l-8 md:border-black  bg-black md:bg-white text-white md:text-black  py-1  font-extrabold "
                   : ""
               }`
-            }>
+            }
+          >
             Dashboard
           </NavLink>
           <NavLink
@@ -27,10 +28,11 @@ const HomePage = () => {
                   ? " md:border-l-8 md:border-black  bg-black md:bg-white text-white md:text-black  py-1  font-extrabold "
                   : ""
               }`
-            }>
+            }
+          >
             Invoices
           </NavLink>
-          <NavLink
+          {/* <NavLink
             to="/customer"
             className={({ isActive }) =>
               `cursor-pointer px-2  py-2 rounded md:rounded-xl md:px-10 md:py-3 mt-4 ${
@@ -40,7 +42,7 @@ const HomePage = () => {
               }`
             }>
             Customers
-          </NavLink>
+          </NavLink> */}
           <NavLink
             to="/setting"
             className={({ isActive }) =>
@@ -49,7 +51,8 @@ const HomePage = () => {
                   ? " md:border-l-8 md:border-black  bg-black md:bg-white text-white md:text-black  py-1  font-extrabold "
                   : ""
               }`
-            }>
+            }
+          >
             Settings
           </NavLink>
         </div>

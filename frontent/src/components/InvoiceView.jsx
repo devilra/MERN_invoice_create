@@ -5,11 +5,44 @@ import { useReactToPrint } from "react-to-print";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import html2pdf from "html2pdf.js";
+import { useDispatch, useSelector } from "react-redux";
+import { getSettings } from "../redux/Slices/settingsSlice";
+
+const SettingSkeleton = () => {
+  return (
+    <div>
+      <div className="h-10 w-40 bg-gray-200 rounded mb-2"></div>
+      <div className="h-4 w-32 bg-gray-200 rounded mb-1"></div>
+      <div className="h-3 w-56 bg-gray-200 rounded mb-1"></div>
+      <div className="h-3 w-48 bg-gray-200 rounded mb-1"></div>
+    </div>
+  );
+};
 
 const InvoiceView = () => {
   const { id } = useParams();
   const [invoice, setInvoice] = useState(null);
+  const [setting, setSetting] = useState(null);
   const printRef = useRef();
+  const dispatch = useDispatch();
+
+  const { items } = useSelector((state) => state.settings);
+  //console.log(items);
+
+  //console.log(setting);
+
+  useEffect(() => {
+    if (!items || items.length === 0) {
+      dispatch(getSettings());
+    }
+  }, [dispatch, items]);
+
+  useEffect(() => {
+    if (items && items.length > 0) {
+      setSetting(items[0]);
+    }
+    console.log(setting);
+  }, [items]);
 
   useEffect(() => {
     const fetchInvoice = async () => {
@@ -20,7 +53,21 @@ const InvoiceView = () => {
         alert("Invoice not found");
       }
     };
+
+    // const fetchSetting = async () => {
+    //   try {
+    //     const res = await API.get("/api/settings"); //getSettings call
+    //     if (res.data?.data?.length > 0) {
+    //       setSetting(res.data.data[0]); // first settings record store
+    //       console.log(res.data.data);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching settings", error);
+    //   }
+    // };
+
     fetchInvoice();
+    // fetchSetting();
   }, [id]);
 
   const handlePrint = () => {
@@ -117,8 +164,12 @@ const InvoiceView = () => {
 
   if (!invoice) {
     return (
-      <div className="p-4 flex justify-center items-center h-[80vh] text-2xl">
-        Loading...
+      <div className="p-6 max-w-5xl mx-auto">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 w-1/3 rounded"></div>
+          <div className="h-4 bg-gray-200 w-1/4 rounded"></div>
+          <div className="h-64 bg-gray-200 w-full rounded"></div>
+        </div>
       </div>
     );
   }
@@ -148,12 +199,14 @@ const InvoiceView = () => {
         <div className="flex gap-2">
           <button
             onClick={handlePrint}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
             Print
           </button>
           <button
             onClick={handleDownloadPDF}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+          >
             Download PDF
           </button>
         </div>
@@ -161,44 +214,52 @@ const InvoiceView = () => {
 
       <div
         ref={printRef}
-        className="bg-white p-6 shadow rounded-md border overflow-x-auto">
+        className="bg-white p-6 shadow rounded-md border overflow-x-auto"
+      >
         <div className="mb-6 ">
           <div>
-            <img
-              src="/inlogo.jpg"
-              alt="GPM"
-              style={{
-                width: "70px",
-                height: "70px",
-                borderRadius: "50px",
-                margin: "10px",
-              }}
-            />
+            {setting?.logo ? (
+              <img
+                src={setting.logo}
+                alt={setting.businessName}
+                style={{
+                  width: "70px",
+                  height: "70px",
+                  borderRadius: "50px",
+                  margin: "10px",
+                }}
+              />
+            ) : (
+              <div className="w-[70px] h-[70px] rounded-full bg-gray-200 animate-pulse m-2"></div>
+            )}
           </div>
           <div className="flex justify-between header-flex">
             <div>
-              <h1 className="font-extrabold">GPM PROPERTIES</h1>
-              <h1
-                style={{ fontFamily: "sans-serif", fontSize: "14px" }}
-                className="text-[14px]">
-                Business Number
-              </h1>
-              <p style={{ fontFamily: "sans-serif", fontSize: "14px" }}>
-                9176552727
-              </p>
-              <p style={{ fontSize: "12px", fontFamily: "monospace" }}>
-                GPM silver spring
-                <br />
-                apt, Nanmangalam
-                <br />
-                chennai
-                <br />
-                600129
-                <br />
-                9176552727
-                <br />
-                info@gpmproperties.in
-              </p>
+              {setting ? (
+                <div>
+                  <h1 className="font-extrabold">{setting.businessName}</h1>
+                  <h1
+                    style={{ fontFamily: "sans-serif", fontSize: "14px" }}
+                    className="text-[14px]"
+                  >
+                    Business Number
+                  </h1>
+                  <p style={{ fontFamily: "sans-serif", fontSize: "14px" }}>
+                    {setting.businessNumber}
+                  </p>
+                  <p style={{ fontSize: "12px", fontFamily: "monospace" }}>
+                    <span className="inline-block w-[100px]">
+                      {setting.address}
+                    </span>
+                    <br />
+                    {setting.phone}
+                    <br />
+                    {setting.email}
+                  </p>
+                </div>
+              ) : (
+                <SettingSkeleton />
+              )}
             </div>
             <div>
               <h3 className="font-semibold text-lg text-gray-700 mb-2">
@@ -206,7 +267,8 @@ const InvoiceView = () => {
               </h3>
               <div
                 style={{ fontFamily: "monospace" }}
-                className="text-sm text-gray-600">
+                className="text-sm text-gray-600"
+              >
                 <p>
                   <strong>Name:</strong> {invoice.customerName}
                 </p>
@@ -308,7 +370,8 @@ const InvoiceView = () => {
             display: "block",
             marginLeft: "auto",
           }}
-          className="text-right mt-6 space-y-1 text-gray-700 text-sm sm:text-base">
+          className="text-right mt-6 space-y-1 text-gray-700 text-sm sm:text-base"
+        >
           <p>
             <strong>Total:</strong> ₹{invoice.totalAmount}
           </p>

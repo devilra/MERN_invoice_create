@@ -58,7 +58,7 @@ exports.getAllInvoices = async (req, res) => {
       const end = new Date(date + "T23:59:59.999Z");
       // end.setHours(23, 59, 59, 999);
 
-      console.log(date, start, end);
+      //console.log(date, start, end);
 
       filter.invoiceDate = {
         $gte: start,

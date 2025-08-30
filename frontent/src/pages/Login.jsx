@@ -11,12 +11,17 @@ const Login = () => {
   const { error } = useSelector((state) => state.auth);
 
   const handleSubmit = async (e) => {
-    setLoading(true);
-    e.preventDefault();
-    const res = await dispatch(loginUser(form));
-    if (res.meta.requestStatus === "fulfilled") {
+    try {
+      setLoading(true);
+      e.preventDefault();
+      const res = await dispatch(loginUser(form));
+      if (res.meta.requestStatus === "fulfilled") {
+        setLoading(false);
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      alert("Something went wrong");
       setLoading(false);
-      navigate("/");
     }
   };
 
@@ -24,7 +29,8 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+        className="w-full max-w-md bg-white p-6 rounded-lg shadow-md"
+      >
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
         <input
@@ -51,7 +57,8 @@ const Login = () => {
           disabled={loading}
           className={`w-full bg-blue-500 text-white py-3 rounded hover:bg-blue-600 transition disabled:opacity-60 ${
             loading && "cursor-not-allowed"
-          }`}>
+          }`}
+        >
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>

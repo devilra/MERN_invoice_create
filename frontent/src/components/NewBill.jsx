@@ -6,6 +6,8 @@ import API from "../api";
 
 const NewBill = () => {
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
+
   const [invoice, setInvoice] = useState({
     customerName: "",
     phone: "",
@@ -111,6 +113,7 @@ const NewBill = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
       // Remove local-only flags before sending
       const payload = {
@@ -121,19 +124,32 @@ const NewBill = () => {
       if (invoiceId) {
         const res = await API.put(`/api/invoices/${invoiceId}`, payload);
         if (res.status === 200) {
-          toast.success("Invoice Updated Successfully");
-          setTimeout(() => navigate("/invoices"), 1000);
+          toast.success("Invoice Updated Successfully", {
+            onClose: () => {
+              setSubmitting(false);
+              navigate("/invoices");
+            },
+          });
         }
       } else {
         const res = await API.post("/api/invoices", payload);
         if (res.status === 201) {
-          toast.success("Invoice Created Successfully");
+          toast.success("Invoice Created Successfully", {
+            onClose: () => {
+              setSubmitting(false);
+              navigate("/invoices");
+            },
+          });
         }
         setTimeout(() => navigate("/invoices"), 1000);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
+      toast.error("Something went wrong", {
+        onClose: () => {
+          setSubmitting(false);
+        },
+      });
     }
   };
 
@@ -310,7 +326,8 @@ const NewBill = () => {
                         />
                         <label
                           className="cursor-pointer text-[12px] mx-5 md:mx-mx-3"
-                          htmlFor={`fileInput-${index}`}>
+                          htmlFor={`fileInput-${index}`}
+                        >
                           choose file
                         </label>
 
@@ -407,7 +424,8 @@ const NewBill = () => {
                     <td className="text-center">
                       <button
                         onClick={() => removeProductRow(index)}
-                        type="button">
+                        type="button"
+                      >
                         <ImCross className="text-red-600 hover:text-red-400" />
                       </button>
                     </td>
@@ -419,7 +437,8 @@ const NewBill = () => {
             <button
               type="button"
               onClick={addProductRow}
-              className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+              className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            >
               + Add Product
             </button>
           </div>
@@ -473,8 +492,19 @@ const NewBill = () => {
           <div className="text-center">
             <button
               type="submit"
-              className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition">
-              {invoiceId ? "Update Invoice" : "Save Invoice"}
+              disabled={submitting}
+              className={`px-6 py-2 rounded text-white transition ${
+                submitting
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-green-600 hover:bg-green-700"
+              }`}
+            >
+              {/* {invoiceId ? "Update Invoice" : "Save Invoice"} */}
+              {submitting
+                ? "Loading"
+                : invoiceId
+                ? "Update Invoice"
+                : "Save Invoice"}
             </button>
           </div>
         </div>

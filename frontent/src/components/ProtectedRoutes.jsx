@@ -10,14 +10,14 @@ const ProtectedRoutes = ({ children }) => {
   const { user, loading } = useSelector((state) => state.auth);
 
   if (loading) {
-    console.log("Loading Run");
+    //console.log("Loading Run");
     return <p>Loading...</p>;
   }
 
-  console.log(user);
+  //console.log(user);
 
   if (!user) {
-    console.log("No User");
+    //console.log("No User");
     return <Navigate to="/login" />;
   }
 
