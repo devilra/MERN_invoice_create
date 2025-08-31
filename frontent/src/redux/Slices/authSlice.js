@@ -47,10 +47,10 @@ export const changePassword = createAsyncThunk(
     try {
       const res = await API.post(
         "/api/auth/change-password",
-        { currentPassword, newPassword },
-        {
-          withCredentials: true,
-        }
+        { currentPassword, newPassword }
+        // {
+        //   withCredentials: true,
+        // }
       );
       //console.log(res.data.msg);
       return res.data.msg;
@@ -64,11 +64,7 @@ export const updateProfile = createAsyncThunk(
   "auth/updateProfile",
   async ({ name, email }, thunkAPI) => {
     try {
-      const res = await API.put(
-        "/api/auth/update",
-        { name, email },
-        { withCredentials: true }
-      );
+      const res = await API.put("/api/auth/update", { name, email });
       console.log(res.data.user);
       return res.data.user;
     } catch (error) {
