@@ -27,6 +27,8 @@ const App = () => {
 
   const location = useLocation();
 
+  console.log(loading);
+
   const noNavbarRoutes = ["/login", "/register"];
   const validRoutes = ["/", "/invoices", "/new", "/invoice"];
 
