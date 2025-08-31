@@ -14,6 +14,7 @@ import Dashboard from "./Dashboard/Dashboard";
 import Customers from "./Dashboard/Customers";
 import API from "./api";
 import Setting from "./Dashboard/Setting";
+import Profile from "./Dashboard/Profile";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="customer" element={<Customers />} />
           <Route path="setting" element={<Setting />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
 
         <Route

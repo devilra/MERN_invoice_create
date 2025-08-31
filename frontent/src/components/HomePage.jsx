@@ -55,6 +55,18 @@ const HomePage = () => {
           >
             Settings
           </NavLink>
+          <NavLink
+            to="profile"
+            className={({ isActive }) =>
+              `cursor-pointer px-2 py-2 rounded md:rounded-xl md:px-10 md:py-3 mt-4 ${
+                isActive
+                  ? "md:border-l-8 md:border-black bg-black md:bg-white text-white md:text-black py-1 font-extrabold"
+                  : ""
+              }`
+            }
+          >
+            Profile
+          </NavLink>
         </div>
       </div>
 

@@ -9,11 +9,11 @@ const DashboardNavbar = () => {
 
   useEffect(() => {
     dispatch(getSettings());
-    console.log(items);
-  }, [dispatch]);
+    //console.log(items);
+  }, []);
 
   const setting = items?.[0];
-  console.log(setting);
+  //console.log(setting);
 
   return (
     <div className="bg-neutral-800 text-white sticky top-0 z-50">

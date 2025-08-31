@@ -34,12 +34,50 @@ export const logoutUser = createAsyncThunk(
 export const getMe = createAsyncThunk("auth/getMe", async (_, thunkAPI) => {
   try {
     const res = await API.get("/api/auth/me");
-    //console.log(res.data.user);
+    console.log(res.data.user);
     return res.data.user;
   } catch (error) {
     return thunkAPI.rejectWithValue(null);
   }
 });
+
+export const changePassword = createAsyncThunk(
+  "auth/changePassword",
+  async ({ currentPassword, newPassword }, thunkAPI) => {
+    try {
+      const res = await API.post(
+        "/api/auth/change-password",
+        { currentPassword, newPassword },
+        {
+          withCredentials: true,
+        }
+      );
+      //console.log(res.data.msg);
+      return res.data.msg;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.msg);
+    }
+  }
+);
+
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async ({ name, email }, thunkAPI) => {
+    try {
+      const res = await API.put(
+        "/api/auth/update",
+        { name, email },
+        { withCredentials: true }
+      );
+      console.log(res.data.user);
+      return res.data.user;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Update failed"
+      );
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
@@ -71,6 +109,7 @@ const authSlice = createSlice({
       })
       .addCase(getMe.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(getMe.fulfilled, (state, action) => {
         state.loading = false;
@@ -79,6 +118,31 @@ const authSlice = createSlice({
       .addCase(getMe.rejected, (state) => {
         state.user = null;
         state.loading = false;
+      })
+      .addCase(changePassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changePassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

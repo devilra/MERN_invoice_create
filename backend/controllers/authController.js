@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const cloudinary = require("cloudinary").v2;
 
 exports.register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -76,7 +77,7 @@ exports.getMe = async (req, res) => {
     if (!user) return res.status(404).json({ msg: "User not found" });
     res.status(200).json({ user });
   } catch (error) {
-    res.status(500).json({ msg: "Server error", error: err.message });
+    res.status(500).json({ msg: "Server error", error: error.message });
   }
 };
 
@@ -104,5 +105,80 @@ exports.deleteUser = async (req, res) => {
     res.status(200).json({ msg: "User deleted successfully" });
   } catch (error) {
     res.status(500).json({ msg: "Server error", error: error.message });
+  }
+};
+
+// Change password
+
+exports.changePassword = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(userId);
+
+    if (!user) return res.status(404).json({ msg: "User not found" });
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ msg: "Old password incorrect" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+
+    await user.save();
+    res.status(200).json({ msg: "Password updated successfully", user });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ msg: error });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const { name, email } = req.body;
+    // if (!name || !email) {
+    //   return res.status(400).json({ message: "Name and Email are required" });
+    // }
+
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    //console.log(user);
+
+    if (req.file) {
+      //console.log(req.file);
+      if (user.avatar?.public_id) {
+        //console.log("public_id is true");
+        await cloudinary.uploader.destroy(user.avatar.public_id);
+      }
+      user.avatar = {
+        url: req.file.path, // multer-cloudinary la path auto cloudinary url
+        public_id: req.file.filename, // public id store pannum
+      };
+    }
+
+    // const updatedUser = await User.findByIdAndUpdate(
+    //   req.user.userId,
+    //   { name, email },
+    //   { new: true }
+    // ).select("-password");
+
+    if (name) user.name = name;
+    if (email) user.email = email;
+
+    await user.save();
+
+    res.json({
+      message: "Profile updated successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+      },
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Server error" });
   }
 };

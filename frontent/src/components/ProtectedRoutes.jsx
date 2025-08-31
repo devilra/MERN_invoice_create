@@ -9,9 +9,11 @@ const ProtectedRoutes = ({ children }) => {
   //const dispatch = useDispatch();
   const { user, loading } = useSelector((state) => state.auth);
 
+  console.log("Protected Route Run");
+
   if (loading) {
     //console.log("Loading Run");
-    return <p>Loading...</p>;
+    return <p>page Loading...</p>;
   }
 
   //console.log(user);

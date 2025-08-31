@@ -18,6 +18,8 @@ const Login = () => {
       if (res.meta.requestStatus === "fulfilled") {
         setLoading(false);
         navigate("/dashboard");
+      } else {
+        setLoading(false);
       }
     } catch (error) {
       alert("Something went wrong");
