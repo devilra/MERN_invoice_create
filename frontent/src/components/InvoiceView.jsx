@@ -336,19 +336,18 @@ const InvoiceView = () => {
           {/* Terms and Conditions Column (Left) */}
           <div className="w-full sm:w-2/3 text-xs text-gray-700 pr-4">
             <h4 className="font-bold text-sm mb-1">Terms and Conditions:</h4>
-            <ul className="list-none ml-0 space-y-1">
+            <ul className="list-disc ml-4 space-y-1">
               <li>
-                * Delivery: Immediate depending on stock and other order in
-                prior.
+                Delivery: Immediate depending on stock and other order in prior.
               </li>
               <li>
-                * Quoted price may increase depend upon the customer
+                Quoted price may increase depend upon the customer
                 specification.
               </li>
               <li>
-                * Quoted price are valid for 15 days from the date of quotation.
+                Quoted price are valid for 15 days from the date of quotation.
               </li>
-              <li>* All civil work & Scaffolding are in customer scope.</li>
+              <li>All civil work & Scaffolding are in customer scope.</li>
             </ul>
 
             <h4 className="font-bold text-sm mt-3 mb-1">Payment Terms:</h4>
