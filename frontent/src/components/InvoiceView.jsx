@@ -362,8 +362,55 @@ const InvoiceView = () => {
           </tfoot>
         </table>
 
+        {/* --- NEW TERMS AND CONDITIONS SECTION START --- */}
+        <div className="mt-6 flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0">
+          {/* Terms and Conditions Column (Left) */}
+          <div className="w-full sm:w-2/3 text-xs text-gray-700">
+            <h4 className="font-bold text-sm mb-1">Terms and Conditions:</h4> 
+            <ul className="list-disc ml-4 space-y-1">
+              <li>
+                Delivery: Immediate depending on stock and other order in prior.
+              </li>
+
+              <li>
+                Quoted price may increase depend upon the customer
+                specification.
+              </li>
+
+              <li>
+                Quoted price are valid for 15 days from the date of quotation.
+              </li>
+
+              <li>All civil work & Scaffolding are in customer scope.</li>
+            </ul>
+            <h4 className="font-bold text-sm mt-3 mb-1">Payment Terms:</h4>
+            <p>
+              60% in advance, 20% against supply of all material (Ms section, Vg
+              panel, Planter, Irrigation material), 20% after completion of
+              work.
+            </p>
+          </div>
+          {/* Summary Column (Right) - Original Summary moved here */}
+
+          <div className="w-full sm:w-1/3 text-right text-gray-700 text-sm sm:text-base">
+            <div className="space-y-1">
+              <p>
+                <strong>Total:</strong> ₹{invoice.totalAmount} 
+              </p>
+
+              <p>
+                <strong>Paid:</strong> ₹{invoice.paidAmount}
+              </p>
+
+              <p>
+                <strong>Balance:</strong> ₹{invoice.balanceAmount}
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Summary */}
-        <div
+        {/* <div
           style={{
             width: "100%",
             textAlign: "right",
@@ -381,7 +428,7 @@ const InvoiceView = () => {
           <p>
             <strong>Balance:</strong> ₹{invoice.balanceAmount}
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );
