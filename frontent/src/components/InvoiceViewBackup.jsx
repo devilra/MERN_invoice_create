@@ -27,6 +27,9 @@ const InvoiceView = () => {
   const dispatch = useDispatch();
 
   const { items } = useSelector((state) => state.settings);
+  //console.log(items);
+
+  //console.log(setting);
 
   useEffect(() => {
     if (!items || items.length === 0) {
@@ -39,7 +42,7 @@ const InvoiceView = () => {
       setSetting(items[0]);
     }
     console.log(setting);
-  }, [items, setting]); // setting-ai dependency-il serthullen
+  }, [items]);
 
   useEffect(() => {
     const fetchInvoice = async () => {
@@ -51,7 +54,20 @@ const InvoiceView = () => {
       }
     };
 
+    // const fetchSetting = async () => {
+    //   try {
+    //     const res = await API.get("/api/settings"); //getSettings call
+    //     if (res.data?.data?.length > 0) {
+    //       setSetting(res.data.data[0]); // first settings record store
+    //       console.log(res.data.data);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching settings", error);
+    //   }
+    // };
+
     fetchInvoice();
+    // fetchSetting();
   }, [id]);
 
   const handlePrint = () => {
@@ -121,6 +137,30 @@ const InvoiceView = () => {
     document.body.style.width = originalWidth;
     document.body.style.zoom = originalZoom;
   };
+
+  // const handleDownloadPDF = async () => {
+  //   const element = printRef.current;
+  //   const canvas = await html2canvas(element, { scale: 2 });
+  //   const imgData = canvas.toDataURL("image/png");
+
+  //   const pdf = new jsPDF("p", "mm", "a4");
+  //   const pdfWidth = pdf.internal.pageSize.getWidth();
+  //   const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+  //   pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+  //   // Instead of saving directly, open in new tab
+  //   const pdfBlob = pdf.output("blob");
+  //   const pdfUrl = URL.createObjectURL(pdfBlob);
+
+  //   const newWindow = window.open(pdfUrl, "_blank");
+  //   if (newWindow) {
+  //     // Wait a bit to ensure PDF loads, then print
+  //     newWindow.onload = () => {
+  //       newWindow.print();
+  //     };
+  //   }
+  // };
 
   if (!invoice) {
     return (
@@ -251,16 +291,36 @@ const InvoiceView = () => {
         <table className="w-full text-sm border">
           <thead>
             <tr className="bg-gray-100 text-gray-800 text-center">
-              <th className="p-2 border">Image</th>
-              <th className="p-2 border">Title</th>
-              <th className="p-2 border">Description</th>
-              <th className="p-2 border">Qty</th>
-              <th className="p-2 border">Rate</th>
-              <th className="p-2 border">CGST %</th>
-              <th className="p-2 border">CGST Amt</th>
-              <th className="p-2 border">SGST %</th>
-              <th className="p-2 border">SGST Amt</th>
-              <th className="p-2 border">Amount</th>
+              <th className="p-2 border" style={{ width: "5%" }}>
+                Image
+              </th>
+              <th className="p-2 border" style={{ width: "10%" }}>
+                Title
+              </th>
+              <th className="p-2 border" style={{ width: "35%" }}>
+                Description
+              </th>
+              <th className="p-2 border" style={{ width: "5%" }}>
+                Qty
+              </th>
+              <th className="p-2 border" style={{ width: "10%" }}>
+                Rate
+              </th>
+              <th className="p-2 border" style={{ width: "5%" }}>
+                CGST %
+              </th>
+              <th className="p-2 border" style={{ width: "10%" }}>
+                CGST Amt
+              </th>
+              <th className="p-2 border" style={{ width: "5%" }}>
+                SGST %
+              </th>
+              <th className="p-2 border" style={{ width: "10%" }}>
+                SGST Amt
+              </th>
+              <th className="p-2 border" style={{ width: "10%" }}>
+                Amount
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -283,16 +343,7 @@ const InvoiceView = () => {
                     )}
                   </td>
                   <td className="p-2 border">{item.title}</td>
-                  <td
-                    className="p-2 border text-left"
-                    style={{
-                      whiteSpace: "pre-wrap",
-                      wordBreak: "break-word",
-                      fontSize: "11px",
-                    }}
-                  >
-                    {item.description}
-                  </td>
+                  <td className="p-2 border">{item.description}</td>
                   <td className="p-2 border">{item.quantity}</td>
                   <td className="p-2 border">₹{item.rate}</td>
                   <td className="p-2 border">{item.cgst || 0}%</td>
@@ -331,26 +382,27 @@ const InvoiceView = () => {
           </tfoot>
         </table>
 
-        {/* --- TERMS AND CONDITIONS SECTION --- */}
+        {/* --- NEW TERMS AND CONDITIONS SECTION START --- */}
         <div className="mt-6 flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0">
           {/* Terms and Conditions Column (Left) */}
-          <div className="w-full sm:w-2/3 text-xs text-gray-700 pr-4">
-            <h4 className="font-bold text-sm mb-1">Terms and Conditions:</h4>
-            <ul className="list-none ml-0 space-y-1">
+          <div className="w-full sm:w-2/3 text-xs text-gray-700">
+            <h4 className="font-bold text-sm mb-1">Terms and Conditions:</h4> 
+            <ul className="list-disc ml-4 space-y-1">
               <li>
-                * Delivery: Immediate depending on stock and other order in
-                prior.
+                Delivery: Immediate depending on stock and other order in prior.
               </li>
+
               <li>
-                * Quoted price may increase depend upon the customer
+                Quoted price may increase depend upon the customer
                 specification.
               </li>
-              <li>
-                * Quoted price are valid for 15 days from the date of quotation.
-              </li>
-              <li>* All civil work & Scaffolding are in customer scope.</li>
-            </ul>
 
+              <li>
+                Quoted price are valid for 15 days from the date of quotation.
+              </li>
+
+              <li>All civil work & Scaffolding are in customer scope.</li>
+            </ul>
             <h4 className="font-bold text-sm mt-3 mb-1">Payment Terms:</h4>
             <p>
               60% in advance, 20% against supply of all material (Ms section, Vg
@@ -358,22 +410,45 @@ const InvoiceView = () => {
               work.
             </p>
           </div>
+          {/* Summary Column (Right) - Original Summary moved here */}
 
-          {/* Summary Column (Right) */}
           <div className="w-full sm:w-1/3 text-right text-gray-700 text-sm sm:text-base">
             <div className="space-y-1">
               <p>
-                <strong>Total:</strong> ₹{invoice.totalAmount}
+                <strong>Total:</strong> ₹{invoice.totalAmount} 
               </p>
+
               <p>
                 <strong>Paid:</strong> ₹{invoice.paidAmount}
               </p>
+
               <p>
                 <strong>Balance:</strong> ₹{invoice.balanceAmount}
               </p>
             </div>
           </div>
         </div>
+
+        {/* Summary */}
+        {/* <div
+          style={{
+            width: "100%",
+            textAlign: "right",
+            display: "block",
+            marginLeft: "auto",
+          }}
+          className="text-right mt-6 space-y-1 text-gray-700 text-sm sm:text-base"
+        >
+          <p>
+            <strong>Total:</strong> ₹{invoice.totalAmount}
+          </p>
+          <p>
+            <strong>Paid:</strong> ₹{invoice.paidAmount}
+          </p>
+          <p>
+            <strong>Balance:</strong> ₹{invoice.balanceAmount}
+          </p>
+        </div> */}
       </div>
     </div>
   );
