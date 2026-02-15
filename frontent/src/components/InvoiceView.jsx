@@ -137,16 +137,16 @@ const InvoiceView = () => {
   const totalCGST = invoice.products.reduce(
     (sum, item) =>
       sum + ((item.rate || 0) * (item.quantity || 0) * (item.cgst || 0)) / 100,
-    0
+    0,
   );
   const totalSGST = invoice.products.reduce(
     (sum, item) =>
       sum + ((item.rate || 0) * (item.quantity || 0) * (item.sgst || 0)) / 100,
-    0
+    0,
   );
   const totalAmount = invoice.products.reduce(
     (sum, item) => sum + (item.rate || 0) * (item.quantity || 0),
-    0
+    0,
   );
   const grandTotal = totalAmount + totalCGST + totalSGST;
 
@@ -206,6 +206,9 @@ const InvoiceView = () => {
                   </h1>
                   <p style={{ fontFamily: "sans-serif", fontSize: "14px" }}>
                     {setting.businessNumber}
+                  </p>
+                  <p style={{ fontFamily: "sans-serif", fontSize: "12px" }}>
+                    <strong>GSTIN:</strong> 33HDWPK4367L1ZO
                   </p>
                   <p style={{ fontSize: "12px", fontFamily: "monospace" }}>
                     <span className="inline-block w-[100px]">
@@ -345,17 +348,20 @@ const InvoiceView = () => {
                 specification.
               </li>
               <li>
-                Quoted price are valid for 15 days from the date of quotation.
+                Quoted price are valid for 15days from the date of quotation.
               </li>
-              <li>All civil work & Scaffolding are in customer scope.</li>
+              <li>
+                80% advance should be paid before unloading materials, and the
+                final 20% balance is due after the work is completed.
+              </li>
+              {/* <li>All civil work & Scaffolding are in customer scope.</li> */}
             </ul>
 
-            <h4 className="font-bold text-sm mt-3 mb-1">Payment Terms:</h4>
-            <p>
-              60% in advance, 20% against supply of all material (Ms section, Vg
-              panel, Planter, Irrigation material), 20% after completion of
-              work.
-            </p>
+            {/* <h4 className="font-bold text-sm mt-3 mb-1">Payment Terms:</h4> */}
+            {/* <p>
+              We have fulfilled 80% of the material supply; the final 20% is
+              scheduled for immediate completion.
+            </p> */}
           </div>
 
           {/* Summary Column (Right) */}
