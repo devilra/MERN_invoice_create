@@ -334,12 +334,16 @@ const InvoiceView = () => {
           </tfoot>
         </table>
 
-        {/* --- TERMS AND CONDITIONS SECTION --- */}
-        <div className="mt-6 flex flex-col sm:flex-row justify-between items-start space-y-4 sm:space-y-0">
+        {/* --- TERMS AND CONDITIONS & BANK DETAILS SECTION --- */}
+        <div className="mt-6 flex flex-col sm:flex-row justify-between items-start space-y-6 sm:space-y-0 border-t pt-4">
           {/* Terms and Conditions Column (Left) */}
-          <div className="w-full sm:w-2/3 text-xs text-gray-700 pr-4">
-            <h4 className="font-bold text-sm mb-1">Terms and Conditions:</h4>
-            <ul className="list-disc ml-4 space-y-1">
+          <div className="w-full sm:w-1/2 text-xs text-gray-700 pr-4">
+            <h4 className="font-bold text-sm mb-1 text-blue-800">
+              Terms and Conditions:
+            </h4>
+            <ul className=" ml-4 space-y-1">
+              <br />
+
               <li>
                 Delivery: Immediate depending on stock and other order in prior.
               </li>
@@ -348,34 +352,78 @@ const InvoiceView = () => {
                 specification.
               </li>
               <li>
-                Quoted price are valid for 15days from the date of quotation.
+                Quoted price are valid for 15 days from the date of quotation.
               </li>
               <li>
                 80% advance should be paid before unloading materials, and the
                 final 20% balance is due after the work is completed.
               </li>
-              {/* <li>All civil work & Scaffolding are in customer scope.</li> */}
             </ul>
 
-            {/* <h4 className="font-bold text-sm mt-3 mb-1">Payment Terms:</h4> */}
-            {/* <p>
-              We have fulfilled 80% of the material supply; the final 20% is
-              scheduled for immediate completion.
-            </p> */}
+            {/* --- ADDED BANK DETAILS SECTION FROM IMAGE --- */}
+            <div className="mt-4 p-3 bg-gray-50 border rounded-md">
+              <h4 className="font-bold text-sm mb-1 text-blue-800 uppercase">
+                Bank Account Details:
+              </h4>
+              <div className="space-y-0.5 font-mono text-[11px]">
+                <p>
+                  <strong>Bank Name:</strong> STATE BANK OF INDIA
+                </p>
+                <p>
+                  <strong>Account Name:</strong> GREEN GLOBAL LANDSCAPE
+                </p>
+                <p>
+                  <strong>A/C No:</strong> 44758412507
+                </p>
+                <p>
+                  <strong>Account Type:</strong> CURRENT A/C
+                </p>
+                <p>
+                  <strong>Branch:</strong> PADIYANALLUR (14160)
+                </p>
+                <p>
+                  <strong>Address:</strong> 159/2, A/A, PADIYANALLUR, CHENNAI
+                  600052
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Summary Column (Right) */}
-          <div className="w-full sm:w-1/3 text-right text-gray-700 text-sm sm:text-base">
-            <div className="space-y-1">
-              <p>
-                <strong>Total:</strong> ₹{invoice.totalAmount}
+          <div className="w-full sm:w-1/3 text-right text-gray-700">
+            <div className="space-y-2 border-b pb-2 mb-2">
+              <p className="flex justify-between">
+                <span className="font-semibold">Sub Total:</span>
+                <span>₹{totalAmount.toFixed(2)}</span>
               </p>
-              <p>
-                <strong>Paid:</strong> ₹{invoice.paidAmount}
+              <p className="flex justify-between text-xs text-gray-500">
+                <span>Total CGST:</span>
+                <span>₹{totalCGST.toFixed(2)}</span>
               </p>
-              <p>
-                <strong>Balance:</strong> ₹{invoice.balanceAmount}
+              <p className="flex justify-between text-xs text-gray-500">
+                <span>Total SGST:</span>
+                <span>₹{totalSGST.toFixed(2)}</span>
               </p>
+            </div>
+            <div className="space-y-1 text-base">
+              <p className="flex justify-between font-bold text-lg text-blue-900">
+                <span>Grand Total:</span>
+                <span>₹{grandTotal.toFixed(2)}</span>
+              </p>
+              <p className="flex justify-between text-green-700 font-medium">
+                <span>Amount Paid:</span>
+                <span>₹{invoice.paidAmount}</span>
+              </p>
+              <p className="flex justify-between text-red-600 font-bold border-t pt-1">
+                <span>Balance Due:</span>
+                <span>₹{invoice.balanceAmount}</span>
+              </p>
+            </div>
+
+            {/* Digital Signature Placeholder */}
+            <div className="mt-10 text-center italic text-gray-400 text-xs">
+              <div className="border-b w-32 ml-auto mb-1"></div>
+              <p>Authorized Signature</p>
             </div>
           </div>
         </div>

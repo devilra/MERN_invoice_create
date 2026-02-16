@@ -14,6 +14,7 @@ const Login = () => {
     try {
       setLoading(true);
       e.preventDefault();
+      // console.log("APi Calling");
       const res = await dispatch(loginUser(form));
       if (res.meta.requestStatus === "fulfilled") {
         setLoading(false);

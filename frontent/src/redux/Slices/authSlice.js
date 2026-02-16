@@ -11,12 +11,12 @@ export const loginUser = createAsyncThunk(
         email,
         password,
       });
-      //console.log(res.data.user);
+      // console.log(res.data.user);
       return res.data.user;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.msg);
     }
-  }
+  },
 );
 
 export const logoutUser = createAsyncThunk(
@@ -28,7 +28,7 @@ export const logoutUser = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue("Logout failed");
     }
-  }
+  },
 );
 
 export const getMe = createAsyncThunk("auth/getMe", async (_, thunkAPI) => {
@@ -47,7 +47,7 @@ export const changePassword = createAsyncThunk(
     try {
       const res = await API.post(
         "/api/auth/change-password",
-        { currentPassword, newPassword }
+        { currentPassword, newPassword },
         // {
         //   withCredentials: true,
         // }
@@ -57,7 +57,7 @@ export const changePassword = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.msg);
     }
-  }
+  },
 );
 
 export const updateProfile = createAsyncThunk(
@@ -69,10 +69,10 @@ export const updateProfile = createAsyncThunk(
       return res.data.user;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Update failed"
+        error.response?.data?.message || "Update failed",
       );
     }
-  }
+  },
 );
 
 const authSlice = createSlice({
@@ -86,9 +86,9 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     //Login
     builder
-      // .addCase(loginUser.pending, (state) => {
-      //   state.loading = true;
-      // })
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
