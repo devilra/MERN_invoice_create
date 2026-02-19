@@ -97,29 +97,78 @@ const InvoiceView = () => {
     });
   };
 
-  const handleDownloadPDF = async () => {
-    // Backup original styles
-    const originalWidth = document.body.style.width;
-    const originalZoom = document.body.style.zoom;
+  // const handleDownloadPDF = async () => {
+  //   // Backup original styles
+  //   const originalWidth = document.body.style.width;
+  //   const originalZoom = document.body.style.zoom;
 
-    // Force desktop layout for PDF generation
-    document.body.style.width = "1024px"; // force wider layout
-    document.body.style.zoom = "1";
+  //   // Force desktop layout for PDF generation
+  //   document.body.style.width = "1024px"; // force wider layout
+  //   document.body.style.zoom = "1";
 
+  //   const element = printRef.current;
+  //   const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+  //   const imgData = canvas.toDataURL("image/png");
+
+  //   const pdf = new jsPDF("p", "mm", "a4");
+  //   const pdfWidth = pdf.internal.pageSize.getWidth();
+  //   const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+  //   pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+  //   pdf.save(`Invoice-${id}.pdf`);
+
+  //   // Restore original styles
+  //   document.body.style.width = originalWidth;
+  //   document.body.style.zoom = originalZoom;
+  // };
+
+  const handleDownloadPDF = () => {
+    // Print panna vendiya invoice area-vai (DOM element) reference moolama edukkuroam
     const element = printRef.current;
-    const canvas = await html2canvas(element, { scale: 2, useCORS: true });
-    const imgData = canvas.toDataURL("image/png");
 
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    // Invoice-kulla irukkura ellaa <img> tags-aiyum select panroam
+    const images = element.querySelectorAll("img");
 
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save(`Invoice-${id}.pdf`);
+    // Ella images-um load aagi mudikkanum, adhukaaga oru promises array create panroam
+    const promises = Array.from(images).map((img) => {
+      // Oru velai image munnadiyae load aagi irundha, udanae success (resolve) nu sollurom
+      if (img.complete) return Promise.resolve();
 
-    // Restore original styles
-    document.body.style.width = originalWidth;
-    document.body.style.zoom = originalZoom;
+      // Image innum load aagala-na, adhu load aagura varai kaathirukka (Promise) sollurom
+      return new Promise((resolve) => {
+        img.onload = resolve; // Image load aanaalum resolve pannu
+        img.onerror = resolve; // Error vandhaalum resolve pannu (illa-na PDF generate aagaathu)
+      });
+    });
+
+    // Ella images-um load aagi mudichadhukku apparam (Promise.all) mela irukkura logic-ai execute pannu
+    Promise.all(promises).then(() => {
+      // PDF options-ai set panroam
+      const opt = {
+        margin: 10, // PDF edges-la 10mm gap (margin) irukkanum
+        filename: `Invoice-${id}.pdf`, // Download aagura PDF file-oda peru
+        image: {
+          type: "jpeg",
+          quality: 0.98, // PDF-la image quality eppadi irukkanum nu sollurom
+        },
+        // HTML-ai image-ah mathura html2canvas settings
+        html2canvas: {
+          scale: 2, // Quality nalla irukka 2x zoom (scale) panroam
+          useCORS: true, // Vera website images (logo) irundha allow pannu
+          logging: false, // Console-la unnecessary logs vendaam
+          letterRendering: true, // Text clear-ah theriya ithu help pannum
+        },
+        // Intha logic thaan content lenth-ah irundha automatic-ah adutha page-ku thallum
+        pagebreak: {
+          mode: ["avoid-all", "css", "legacy"],
+        },
+        // Final PDF output size 'A4' size-la portrait-ah irukkanum nu sollurom
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      };
+
+      // html2pdf library use panni, element-ai eduthu, options-ai apply panni, PDF-ah save panroam
+      html2pdf().from(element).set(opt).save();
+    });
   };
 
   if (!invoice) {
@@ -273,7 +322,11 @@ const InvoiceView = () => {
               const sgstAmount = (baseAmount * (item.sgst || 0)) / 100;
               const totalItemAmount = baseAmount + cgstAmount + sgstAmount;
               return (
-                <tr key={index} className="text-center">
+                <tr
+                  key={index}
+                  className="text-center"
+                  style={{ pageBreakInside: "avoid" }}
+                >
                   <td className="p-2 border">
                     {item.image ? (
                       <img
