@@ -57,41 +57,65 @@ const InvoiceView = () => {
   const handlePrint = () => {
     const element = printRef.current;
 
-    // Wait until all images are loaded before generating PDF
+    // 1. Wait until all images are loaded
     const loadImages = () => {
       const images = element.querySelectorAll("img");
       const promises = Array.from(images).map((img) => {
         if (img.complete) return Promise.resolve();
         return new Promise((resolve) => {
           img.onload = resolve;
-          img.onerror = resolve; // continue even if an image fails
+          img.onerror = resolve;
         });
       });
       return Promise.all(promises);
     };
 
     loadImages().then(() => {
+      // 2. TEMPORARY STYLING for Print (The fix for mobile cutting)
+      const originalWidth = element.style.width;
+      const originalMaxWidth = element.style.maxWidth;
+      const originalOverflow = element.style.overflowX;
+
+      element.style.width = "1024px"; // Force desktop width
+      element.style.maxWidth = "none";
+      element.style.overflowX = "visible";
+
+      const opt = {
+        margin: [10, 5, 10, 5],
+        filename: `Invoice-${id}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          letterRendering: true,
+          width: 1024, // Matches the forced width
+        },
+        pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      };
+
+      // 3. Generate PDF and open Print/View
       html2pdf()
         .from(element)
-        .set({
-          margin: 10,
-          filename: `Invoice-${id}.pdf`,
-          html2canvas: {
-            scale: 2,
-            useCORS: true, // Allow cross-origin images
-            logging: false,
-          },
-          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        })
+        .set(opt)
         .outputPdf("bloburl") // Get PDF as Blob URL
         .then((pdfUrl) => {
+          // RESTORE ORIGINAL STYLING immediately after generating
+          element.style.width = originalWidth;
+          element.style.maxWidth = originalMaxWidth;
+          element.style.overflowX = originalOverflow;
+
           if (window.innerWidth > 768) {
-            // Desktop → open in new tab with print option
+            // Desktop → open in new tab (browser print options will show)
             const win = window.open(pdfUrl, "_blank");
             if (win) win.focus();
           } else {
-            // Mobile → directly download
-            window.location.href = pdfUrl;
+            // Mobile → Directly open/download the blob
+            const link = document.createElement("a");
+            link.href = pdfUrl;
+            link.download = `Invoice-${id}.pdf`;
+            link.click();
           }
         });
     });
@@ -123,51 +147,56 @@ const InvoiceView = () => {
   // };
 
   const handleDownloadPDF = () => {
-    // Print panna vendiya invoice area-vai (DOM element) reference moolama edukkuroam
     const element = printRef.current;
 
-    // Invoice-kulla irukkura ellaa <img> tags-aiyum select panroam
+    // 1. Image loading check
     const images = element.querySelectorAll("img");
-
-    // Ella images-um load aagi mudikkanum, adhukaaga oru promises array create panroam
     const promises = Array.from(images).map((img) => {
-      // Oru velai image munnadiyae load aagi irundha, udanae success (resolve) nu sollurom
       if (img.complete) return Promise.resolve();
-
-      // Image innum load aagala-na, adhu load aagura varai kaathirukka (Promise) sollurom
       return new Promise((resolve) => {
-        img.onload = resolve; // Image load aanaalum resolve pannu
-        img.onerror = resolve; // Error vandhaalum resolve pannu (illa-na PDF generate aagaathu)
+        img.onload = resolve;
+        img.onerror = resolve;
       });
     });
 
-    // Ella images-um load aagi mudichadhukku apparam (Promise.all) mela irukkura logic-ai execute pannu
     Promise.all(promises).then(() => {
-      // PDF options-ai set panroam
+      // 2. TEMPORARY STYLING (The real fix)
+      // PDF edukkurathuku munnadi element-oda width-ah desktop size-ku fix panrom
+      const originalWidth = element.style.width;
+      const originalMaxWidth = element.style.maxWidth;
+
+      element.style.width = "1024px"; // Fixed width for desktop view
+      element.style.maxWidth = "none";
+
       const opt = {
-        margin: 10, // PDF edges-la 10mm gap (margin) irukkanum
-        filename: `Invoice-${id}.pdf`, // Download aagura PDF file-oda peru
-        image: {
-          type: "jpeg",
-          quality: 0.98, // PDF-la image quality eppadi irukkanum nu sollurom
-        },
-        // HTML-ai image-ah mathura html2canvas settings
+        margin: [10, 5, 10, 5],
+        filename: `Invoice-${id}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
         html2canvas: {
-          scale: 2, // Quality nalla irukka 2x zoom (scale) panroam
-          useCORS: true, // Vera website images (logo) irundha allow pannu
-          logging: false, // Console-la unnecessary logs vendaam
-          letterRendering: true, // Text clear-ah theriya ithu help pannum
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          letterRendering: true,
+          width: 1024, // Canvas width-aiyum fix panrom
         },
-        // Intha logic thaan content lenth-ah irundha automatic-ah adutha page-ku thallum
+        // Ithu thaan pages cut aagama adutha page-ku sariya kondu pogum
         pagebreak: {
           mode: ["avoid-all", "css", "legacy"],
+          before: ".page-break", // Unga HTML-la enga break venumo anga intha class-ah use pannalam
         },
-        // Final PDF output size 'A4' size-la portrait-ah irukkanum nu sollurom
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       };
 
-      // html2pdf library use panni, element-ai eduthu, options-ai apply panni, PDF-ah save panroam
-      html2pdf().from(element).set(opt).save();
+      // 3. Generate PDF
+      html2pdf()
+        .from(element)
+        .set(opt)
+        .save()
+        .then(() => {
+          // 4. RESTORE ORIGINAL STYLING
+          element.style.width = originalWidth;
+          element.style.maxWidth = originalMaxWidth;
+        });
     });
   };
 
@@ -300,12 +329,17 @@ const InvoiceView = () => {
         </div>
 
         {/* Products Table */}
-        <table className="w-full text-sm border">
+        <table
+          className="w-full text-sm border border-collapse"
+          // style={{ tableLayout: "fixed", width: "100%" }}
+        >
           <thead>
             <tr className="bg-gray-100 text-gray-800 text-center">
               <th className="p-2 border">Image</th>
               <th className="p-2 border">Title</th>
-              <th className="p-2 border">Description</th>
+              <th className="p-2 border" style={{ width: "35%" }}>
+                Description
+              </th>
               <th className="p-2 border">Qty</th>
               <th className="p-2 border">Rate</th>
               <th className="p-2 border">CGST %</th>
@@ -342,9 +376,8 @@ const InvoiceView = () => {
                   <td
                     className="p-2 border text-left"
                     style={{
-                      whiteSpace: "pre-wrap",
-                      wordBreak: "break-word",
-                      fontSize: "11px",
+                      pageBreakInside: "avoid",
+                      breakInside: "avoid", // Itha extra-va sethukkunga
                     }}
                   >
                     {item.description}
@@ -474,10 +507,10 @@ const InvoiceView = () => {
             </div>
 
             {/* Digital Signature Placeholder */}
-            <div className="mt-10 text-center italic text-gray-400 text-xs">
+            {/* <div className="mt-10 text-center italic text-gray-400 text-xs">
               <div className="border-b w-32 ml-auto mb-1"></div>
               <p>Authorized Signature</p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
